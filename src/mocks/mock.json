@@ -1,0 +1,7 @@
+{
+  "answer": "Based on the data provided, the available dataset for labour force statistics is:\n\n**6202.0 Labour Force, Australia - Table 25. Underutilised persons by State, Territory and Sex (expanded analytical series), Monthly**\n\nThis dataset contains detailed monthly time series data covering:\n\n**Geographic coverage:** Australia and all states/territories (NSW, Victoria, Queensland, South Australia, Western Australia, Tasmania, Northern Territory, Australian Capital Territory)\n\n**Breakdowns available:**\n- By sex (Persons, Males, Females)\n- Employment status (Employed total, Employed full-time, Employed part-time)\n- Underemployment categories (expanded analytical series) including:\n  - Underemployed total\n  - Underemployed full-time (with sub-categories for economic reasons and preference for more hours)\n  - Underemployed part-time (with sub-categories for economic reasons and preference for more hours)\n\n**Time coverage:** Monthly data from July 2014 through to July 2025 (133 observations per series)\n\n**Data characteristics:**\n- Original series type\n- Stock data type\n- Monthly frequency\n- Units in thousands (000)\n\nThis dataset provides comprehensive labour force underutilisation statistics that can be analyzed by jurisdiction, sex, and employment type over an 11-year period.",
+  "files_referenced": [
+    "https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia/latest-release/6202025.xlsx"
+  ],
+  "sources_referenced": ["ABS"]
+}

@@ -87,27 +87,25 @@ async def ask_question(request: AskRequest):
         # Make request to DeepSeek API
         headers = {}
         api_key = request.api_key or os.getenv("DEEPSEEK_API_KEY")
-        print(api_key)
         if api_key:
             headers["Authorization"] = f"Bearer {api_key}"
         
-
-     #    response = requests.post(
-     #        "https://api.deepseek.com/v1/chat/completions", 
-     #        json=payload,
-     #        headers=headers
-     #    )
+        response = requests.post(
+            "https://api.deepseek.com/v1/chat/completions", 
+            json=payload,
+            headers=headers
+        )
         
-     #    if response.status_code != 200:
-     #        raise HTTPException(
-     #            status_code=response.status_code, 
-     #            detail=f"DeepSeek API error: {response.text}"
-     #        )
+        if response.status_code != 200:
+            raise HTTPException(
+                status_code=response.status_code, 
+                detail=f"DeepSeek API error: {response.text}"
+            )
         
-     #    response_data = response.json()
+        response_data = response.json()
         
-     #    answer = response_data.get("choices", [{}])[0].get("message", {}).get("content", "No response received")
-        answer = "8752.0"
+        answer = response_data.get("choices", [{}])[0].get("message", {}).get("content", "No response received")
+        # answer = "8752.0"
 
         datasets = get_abs_data(answer)
 
@@ -116,7 +114,7 @@ async def ask_question(request: AskRequest):
             "messages": [
                 {
                     "role": "system", 
-                    "content": f"You are a helpful assistant specializing in Australian Bureau of Statistics data. Filter only relevant data and return ONLY json object with fields 'summary' and a 'products' array of objects with 'product_title', 'product_release_date', 'product_url', and 'topics' string array based on title. Use this context about available datasets to summarize the content using the data from context based on question: " + str(datasets)
+                    "content": f"You are a helpful assistant specializing in Australian Bureau of Statistics data. Filter at least 3 relevant data and return ONLY json object with fields 'summary' and a 'products' array of objects with 'product_title', 'product_release_date', 'product_url', and 'topics' string array based on title. Use this context about available datasets to summarize the content using the data from context based on question: " + str(datasets)
                 },
                 {"role": "user", "content": request.question}
             ],
@@ -145,38 +143,88 @@ async def ask_question(request: AskRequest):
             summary = parsed_response.get("summary", "No summary available")
             datasets_list = parsed_response.get("products", [])
         except json.JSONDecodeError:
-            # If not JSON, use the raw response as summary
-            summary = ai_response
-            datasets_list = []
+            # Try to extract JSON from markdown code blocks or text
+            try:
+                # Look for JSON within markdown code blocks
+                import re
+                json_match = re.search(r'```json\s*(\{.*?\})\s*```', ai_response, re.DOTALL)
+                if json_match:
+                    parsed_response = json.loads(json_match.group(1))
+                    summary = parsed_response.get("summary", "No summary available")
+                    datasets_list = parsed_response.get("products", [])
+                else:
+                    # Try to find JSON object in the text
+                    json_match = re.search(r'\{.*"summary".*"products".*\}', ai_response, re.DOTALL)
+                    if json_match:
+                        parsed_response = json.loads(json_match.group(0))
+                        summary = parsed_response.get("summary", "No summary available")
+                        datasets_list = parsed_response.get("products", [])
+                    else:
+                        # If still no JSON found, use the raw response as summary
+                        summary = ai_response
+                        datasets_list = []
+            except (json.JSONDecodeError, AttributeError):
+                # If all parsing fails, use the raw response as summary
+                summary = ai_response
+                datasets_list = []
 
+        # Process datasets list to ensure consistent format and remove duplicates
+        processed_datasets = []
+        seen_titles = set()
+        
+        for dataset in datasets_list:
+            # Handle different formats of dataset objects
+            if isinstance(dataset, dict):
+                title = dataset.get("product_title", dataset.get("title", "")).strip()
+                
+                # Skip if we've already seen this title (case-insensitive comparison)
+                title_lower = title.lower()
+                if title_lower and title_lower not in seen_titles:
+                    seen_titles.add(title_lower)
+                    
+                    processed_dataset = {
+                        "agency": dataset.get("agency", "Australian Bureau of Statistics"),
+                        "title": title,
+                        "release_date": dataset.get("product_release_date", dataset.get("release_date", "")),
+                        "url": dataset.get("product_url", dataset.get("url", "")),
+                        "topics": dataset.get("topics", []),
+                    }
+                    processed_datasets.append(processed_dataset)
+        
         # If no datasets from AI, construct from ABS data
-        if not datasets_list and 'data' in datasets:
+        if not processed_datasets and 'data' in datasets:
             abs_data = datasets['data']
-            datasets_list = []
             
             for series in abs_data.get('series_data', []):
-                # Get topics from metadata
-                topics = []
-                for data in context_data:
-                    if data['catId'] == answer:
-                        topics = data.get('topics', [])
-                        break
+                title = series.get('product_title', '').strip()
+                title_lower = title.lower()
                 
-                dataset_item = {
-                    "agency": "Australian Bureau of Statistics",
-                    "title": series.get('product_title', ''),
-                    "release_date": series.get('product_release_date', ''),
-                    "url": series.get('product_url', ''),
-                    "topics": topics,
-                }
-                datasets_list.append(dataset_item)
+                # Skip if we've already seen this title
+                if title_lower and title_lower not in seen_titles:
+                    seen_titles.add(title_lower)
+                    
+                    # Get topics from metadata
+                    topics = []
+                    for data in context_data:
+                        if data['catId'] == answer:
+                            topics = data.get('topics', [])
+                            break
+                    
+                    dataset_item = {
+                        "agency": "Australian Bureau of Statistics",
+                        "title": title,
+                        "release_date": series.get('product_release_date', ''),
+                        "url": series.get('product_url', ''),
+                        "topics": topics,
+                    }
+                    processed_datasets.append(dataset_item)
+        
+        datasets_list = processed_datasets
 
         return AskResponse(
             answer=summary,
             datasets=datasets_list
         )
-
-     #    https://govhack.koso.dev
         
     except requests.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Request error: {str(e)}")

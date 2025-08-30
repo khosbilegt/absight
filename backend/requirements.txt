@@ -1,0 +1,25 @@
+# FastAPI and web server
+fastapi==0.116.1
+uvicorn[standard]==0.35.0
+
+# Data processing and Excel handling
+pandas==2.3.2
+openpyxl==3.1.5
+xlrd==2.0.1
+
+# HTTP requests
+requests==2.32.5
+
+# Data validation and serialization
+pydantic==2.11.7
+
+# Environment variables
+python-dotenv==1.1.1
+
+# XML parsing (built-in with Python, but listed for clarity)
+# xml.etree.ElementTree is part of Python standard library
+
+# Optional: For better performance and additional features
+# numpy==2.3.2  # Already included with pandas
+# beautifulsoup4==4.13.5  # For HTML parsing if needed
+# lxml==6.0.1  # For faster XML parsing if needed

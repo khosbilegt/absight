@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useRecentSearches } from "@/providers/recent-searches-provider";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 // Recent searches (mock data)
 // const recentSearches = [
@@ -47,10 +48,23 @@ export function AppSidebar() {
         <div className="flex items-center justify-between">
           {isExpanded && (
             <div className="flex items-center gap-2 min-w-0">
-              <div className="bg-gradient-to-r from-primary to-primary/80 p-1.5 rounded-lg">
-                <Database className="h-4 w-4 text-primary-foreground" />
-              </div>
-              <span className="font-semibold text-sm truncate">DataFinder</span>
+              <Image
+                src="/logo-light.svg"
+                alt="Data Compass"
+                width={18}
+                height={18}
+                className="hidden dark:block"
+              />
+              <Image
+                src="/logo-dark.svg"
+                alt="Data Compass"
+                width={18}
+                height={18}
+                className="block dark:hidden"
+              />
+              <span className="font-semibold text-sm truncate">
+                Data Compass
+              </span>
             </div>
           )}
 

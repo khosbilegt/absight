@@ -4,7 +4,7 @@ import {
   Settings,
   PanelLeftClose,
   PanelLeft,
-  Database,
+  SquarePen,
   History,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,19 +16,11 @@ import { useRecentSearches } from "@/providers/recent-searches-provider";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 
-// Recent searches (mock data)
-// const recentSearches = [
-//   "Youth employment data",
-//   "Regional health statistics",
-//   "Education outcomes NSW",
-//   "Housing affordability trends",
-// ];
-
 const navigationItems = [
   {
-    title: "Browse All",
-    href: "/browse",
-    icon: Database,
+    title: "New chat",
+    icon: SquarePen,
+    onClick: () => window.location.reload(),
   },
 ];
 
@@ -86,21 +78,21 @@ export function AppSidebar() {
       {/* Main Navigation */}
       <div className="flex-1 px-3">
         <nav className="space-y-1">
-          {navigationItems.map((item) => (
-            <Link key={item.href} href={item.href}>
-              <Button
-                variant="ghost"
-                className={cn(
-                  "w-full justify-start h-10 px-3",
-                  !isExpanded && "px-0 justify-center"
-                )}
-              >
-                <item.icon className="h-4 w-4" />
-                {isExpanded && (
-                  <span className="ml-3 truncate">{item.title}</span>
-                )}
-              </Button>
-            </Link>
+          {navigationItems.map((item, idx) => (
+            <Button
+              key={item.title + idx}
+              variant="ghost"
+              className={cn(
+                "w-full justify-start h-10 px-3",
+                !isExpanded && "px-0 justify-center"
+              )}
+              onClick={item.onClick}
+            >
+              <item.icon className="h-4 w-4" />
+              {isExpanded && (
+                <span className="ml-3 truncate">{item.title}</span>
+              )}
+            </Button>
           ))}
         </nav>
 

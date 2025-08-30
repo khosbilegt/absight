@@ -3,9 +3,10 @@ export interface Dataset {
   agency: string;
   title: string;
   topics: string[];
+  date: string;
   url: string;
-  downloadUrl: string;
-  qualityScore: number;
+  downloadUrl?: string;
+  qualityScore?: number;
 }
 
 export interface ChatMessage {

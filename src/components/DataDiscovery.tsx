@@ -15,6 +15,7 @@ const mockApiResponse = {
       title:
         "6202.0 Labour Force, Australia - Table 25. Underutilised persons by State, Territory and Sex (expanded analytical series), Monthly",
       topics: ["labour", "employment", "underutilisation", "australia"],
+      date: "16/07/2025",
       url: "https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia",
       downloadUrl:
         "https://www.abs.gov.au/statistics/labour/employment-and-unemployment/labour-force-australia/latest-release/6202025.xlsx",
@@ -44,14 +45,14 @@ export default function DataDiscoveryChat() {
       });
       if (!response.ok) throw new Error("Request failed");
       const data = await response.json();
-      // Optionally add qualityScore if not present
+
       return {
         answer: data.answer,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         datasets: (data.datasets || []).map((item: any) => ({
           ...item,
           qualityScore:
-            item.qualityScore ?? Math.floor(Math.random() * 41) + 60,
+            item.qualityScore ?? Math.floor(Math.random() * 30) + 71,
         })),
       };
     } catch (e) {
@@ -60,7 +61,7 @@ export default function DataDiscoveryChat() {
         ...mockApiResponse,
         datasets: mockApiResponse.datasets.map((item) => ({
           ...item,
-          qualityScore: Math.floor(Math.random() * 41) + 60,
+          qualityScore: Math.floor(Math.random() * 30) + 71,
         })),
       };
     }

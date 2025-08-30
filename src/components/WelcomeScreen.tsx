@@ -7,10 +7,10 @@ interface WelcomeScreenProps {
 
 export function WelcomeScreen({ onSuggestionClick }: WelcomeScreenProps) {
   const suggestedQueries = [
-    "Find youth employment data",
-    "Regional development statistics",
-    "Health outcomes by postcode",
-    "Education completion rates",
+    "Statistics about employment in Australia",
+    "Current trend in the Consumer Price Index",
+    "Value of Australia in international trade",
+    "Change in job vacancies in the last year",
   ];
 
   return (

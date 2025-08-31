@@ -116,7 +116,7 @@ export function DatasetCard({
                   variant="default"
                   size="sm"
                   onClick={onExpand}
-                  disabled={isSummaryLoading}
+                  disabled={true}
                 >
                   {isSummaryLoading ? (
                     <>

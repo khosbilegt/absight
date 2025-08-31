@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DataFinder AI",
+  title: "Data Compass",
   description: "Discover Australia's Government Data",
 };
 

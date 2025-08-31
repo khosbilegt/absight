@@ -1,6 +1,7 @@
 # DataCompass
 
 DataCompass is our GovHack 2025 project: an AI-powered search engine for Australian government data.
+![DataCompass Logo](https://i.imgur.com/PkiyLKE.png)
 
 ## Overview
 

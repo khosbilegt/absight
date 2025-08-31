@@ -24,7 +24,7 @@ def load_context():
 # Request model
 class AskRequest(BaseModel):
     question: str
-    api_key: str = None  # Optional API key for DeepSeek
+    api_key: str = None  # Optional API key for OpenAI
 
 # Response model
 class AskResponse(BaseModel):
@@ -71,9 +71,9 @@ async def ask_question(request: AskRequest):
         # Convert context to string for the AI model
         context_str = json.dumps(context_data, indent=2)
         
-        # Prepare the payload for DeepSeek API
+        # Prepare the payload for OpenAI API
         payload = {
-            "model": "deepseek-chat",
+            "model": "gpt-4o",
             "messages": [
                 {
                     "role": "system", 
@@ -84,14 +84,14 @@ async def ask_question(request: AskRequest):
             "stream": False
         }
         
-        # Make request to DeepSeek API
+        # Make request to OpenAI API
         headers = {}
-        api_key = request.api_key or os.getenv("DEEPSEEK_API_KEY")
+        api_key = request.api_key or os.getenv("OPENAI_API_KEY")
         if api_key:
             headers["Authorization"] = f"Bearer {api_key}"
         
         response = requests.post(
-            "https://api.deepseek.com/v1/chat/completions", 
+            "https://api.openai.com/v1/chat/completions", 
             json=payload,
             headers=headers
         )
@@ -99,7 +99,7 @@ async def ask_question(request: AskRequest):
         if response.status_code != 200:
             raise HTTPException(
                 status_code=response.status_code, 
-                detail=f"DeepSeek API error: {response.text}"
+                detail=f"OpenAI API error: {response.text}"
             )
         
         response_data = response.json()
@@ -110,7 +110,7 @@ async def ask_question(request: AskRequest):
         datasets = get_abs_data(answer)
 
         summary_payload = {
-            "model": "deepseek-chat",
+            "model": "gpt-4o",
             "messages": [
                 {
                     "role": "system", 
@@ -122,7 +122,7 @@ async def ask_question(request: AskRequest):
         }
 
         response = requests.post(
-            "https://api.deepseek.com/v1/chat/completions", 
+            "https://api.openai.com/v1/chat/completions", 
             json=summary_payload,
             headers=headers
         )
@@ -130,7 +130,7 @@ async def ask_question(request: AskRequest):
         if response.status_code != 200:
             raise HTTPException(
                 status_code=response.status_code, 
-                detail=f"DeepSeek API error: {response.text}"
+                detail=f"OpenAI API error: {response.text}"
             )
         
         response_data = response.json()

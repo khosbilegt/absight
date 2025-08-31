@@ -111,35 +111,48 @@ export function DatasetCard({
         <div className="flex justify-between items-center pt-3 border-t border-border mt-3">
           <div className="flex w-full justify-between items-center gap-2">
             {!expanded ? (
-              <Button
-                variant="default"
-                size="sm"
-                onClick={onExpand}
-                disabled={isSummaryLoading}
-              >
-                {isSummaryLoading ? (
-                  <>
-                    <AudioLines /> Loading
-                  </>
-                ) : (
-                  "Summarize"
-                )}
-              </Button>
+              <div className="flex gap-4">
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={onExpand}
+                  disabled={isSummaryLoading}
+                >
+                  {isSummaryLoading ? (
+                    <>
+                      <AudioLines /> Loading
+                    </>
+                  ) : (
+                    "Summarize"
+                  )}
+                </Button>
+
+                <div className="flex items-center gap-1">
+                  <div
+                    className={`h-2 w-2 rounded-full ${getQualityColor(
+                      qualityScore
+                    )}`}
+                  />
+                  <span className="text-xs text-muted-foreground">
+                    {qualityScore}/100
+                  </span>
+                </div>
+              </div>
             ) : (
               <Button variant="secondary" size="sm" onClick={onCollapse}>
                 Close
               </Button>
             )}
-            <div className="flex items-center gap-1">
-              <div
-                className={`h-2 w-2 rounded-full ${getQualityColor(
-                  qualityScore
-                )}`}
-              />
-              <span className="text-xs text-muted-foreground">
-                {qualityScore}/100
-              </span>
-            </div>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                onView?.(dataset);
+              }}
+            >
+              Visit
+            </Button>
           </div>
         </div>
         {expanded && (
